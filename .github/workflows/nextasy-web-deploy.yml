@@ -4,46 +4,224 @@ on:
   push:
     branches:
       - main
+      - 'design/**'
+      - 'feature/**'
+      - 'preview/**'
   workflow_dispatch:
+
+env:
+  CF_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+  CF_DOMAIN: d3heh2lnt32ajw.cloudfront.net
+  ROUTE53_ZONE_ID: ${{ secrets.ROUTE53_ZONE_ID }}
 
 jobs:
   deploy:
-    name: Build & Deploy to S3 + CloudFront
+    name: Deploy Preview
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
+      # ── Resolve branch → S3 path + subdomain ──────────────────────────────
+      - name: Compute deployment target
+        id: target
+        run: |
+          RAW_BRANCH="${{ github.ref_name }}"
+
+          # Sanitize: strip design/ feature/ preview/ prefixes, replace / and _ with -
+          SLUG=$(echo "$RAW_BRANCH" \
+            | sed 's|^design/||' \
+            | sed 's|^feature/||' \
+            | sed 's|^preview/||' \
+            | tr '/_' '-' \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed 's/[^a-z0-9-]//g')
+
+          if [ "$RAW_BRANCH" = "main" ]; then
+            S3_PATH="s3://${{ secrets.S3_BUCKET }}/"
+            SUBDOMAIN="nextasy.co"
+            PREVIEW_URL="https://nextasy.co"
+            CF_URL="https://${{ env.CF_DOMAIN }}"
+            IS_MAIN="true"
+          else
+            S3_PATH="s3://${{ secrets.S3_BUCKET }}/branches/${SLUG}/"
+            SUBDOMAIN="${SLUG}.nextasy.co"
+            PREVIEW_URL="https://${SLUG}.nextasy.co"
+            CF_URL="https://${{ env.CF_DOMAIN }}/branches/${SLUG}/"
+            IS_MAIN="false"
+          fi
+
+          echo "raw_branch=$RAW_BRANCH"   >> $GITHUB_OUTPUT
+          echo "slug=$SLUG"               >> $GITHUB_OUTPUT
+          echo "s3_path=$S3_PATH"         >> $GITHUB_OUTPUT
+          echo "subdomain=$SUBDOMAIN"     >> $GITHUB_OUTPUT
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "cf_url=$CF_URL"           >> $GITHUB_OUTPUT
+          echo "is_main=$IS_MAIN"         >> $GITHUB_OUTPUT
+
+          echo "──────────────────────────────────"
+          echo "Branch  : $RAW_BRANCH"
+          echo "Slug    : $SLUG"
+          echo "S3 path : $S3_PATH"
+          echo "Subdomain: $SUBDOMAIN"
+          echo "CF URL  : $CF_URL"
+          echo "──────────────────────────────────"
+
+      # ── Configure AWS ──────────────────────────────────────────────────────
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # ── S3 Sync ────────────────────────────────────────────────────────────
       - name: Sync to S3
         run: |
-          aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
+          S3_PATH="${{ steps.target.outputs.s3_path }}"
+          echo "Syncing to $S3_PATH"
+
+          # Sync all files (exclude git/ci artifacts)
+          aws s3 sync . "$S3_PATH" \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "README.md" \
-            --cache-control "public, max-age=31536000" \
-            --metadata-directive REPLACE
-          # Set shorter cache for HTML files
-          aws s3 cp s3://${{ secrets.S3_BUCKET }}/index.html \
-            s3://${{ secrets.S3_BUCKET }}/index.html \
-            --metadata-directive REPLACE \
-            --content-type "text/html; charset=utf-8" \
-            --cache-control "public, max-age=60, stale-while-revalidate=300" || true
+            --exclude "*.md" \
+            --cache-control "public, max-age=31536000, immutable"
 
+          # HTML files: short cache for instant updates
+          find . -name "*.html" \
+            ! -path "./.git/*" \
+            ! -path "./.github/*" | while read f; do
+            KEY="${f#./}"
+            if [ "${{ steps.target.outputs.is_main }}" = "true" ]; then
+              DEST_KEY="$KEY"
+            else
+              DEST_KEY="branches/${{ steps.target.outputs.slug }}/$KEY"
+            fi
+            aws s3 cp "$f" "s3://${{ secrets.S3_BUCKET }}/$DEST_KEY" \
+              --content-type "text/html; charset=utf-8" \
+              --cache-control "public, max-age=60, stale-while-revalidate=300" \
+              --metadata-directive REPLACE
+          done
+
+      # ── CloudFront invalidation ────────────────────────────────────────────
       - name: Invalidate CloudFront
         run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          SLUG="${{ steps.target.outputs.slug }}"
+          IS_MAIN="${{ steps.target.outputs.is_main }}"
 
-      - name: Deploy Summary
+          if [ "$IS_MAIN" = "true" ]; then
+            PATHS="/*"
+          else
+            PATHS="/branches/${SLUG}/*"
+          fi
+
+          echo "Invalidating: $PATHS"
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ env.CF_DISTRIBUTION_ID }}" \
+            --paths "$PATHS"
+
+      # ── Route 53 record (create/update per branch) ────────────────────────
+      - name: Upsert Route 53 DNS record
+        if: ${{ steps.target.outputs.is_main == 'false' && env.ROUTE53_ZONE_ID != '' }}
+        env:
+          ROUTE53_ZONE_ID: ${{ secrets.ROUTE53_ZONE_ID }}
         run: |
-          echo "✅ Deployed to https://d3heh2lnt32ajw.cloudfront.net"
+          SUBDOMAIN="${{ steps.target.outputs.subdomain }}"
+          CF_DOMAIN="${{ env.CF_DOMAIN }}"
+
+          echo "Upserting CNAME: $SUBDOMAIN -> $CF_DOMAIN"
+
+          aws route53 change-resource-record-sets \
+            --hosted-zone-id "$ROUTE53_ZONE_ID" \
+            --change-batch "{
+              \"Changes\": [{
+                \"Action\": \"UPSERT\",
+                \"ResourceRecordSet\": {
+                  \"Name\": \"${SUBDOMAIN}\",
+                  \"Type\": \"CNAME\",
+                  \"TTL\": 300,
+                  \"ResourceRecords\": [{\"Value\": \"${CF_DOMAIN}\"}]
+                }
+              }]
+            }"
+
+          echo "DNS record upserted: https://${SUBDOMAIN}"
+
+      # ── Summary ───────────────────────────────────────────────────────────
+      - name: Deployment summary
+        run: |
+          echo "──────────────────────────────────────────"
+          echo "✅ DEPLOYMENT COMPLETE"
+          echo ""
+          echo "Branch   : ${{ steps.target.outputs.raw_branch }}"
+          echo "Slug     : ${{ steps.target.outputs.slug }}"
+          echo ""
+          echo "📦 S3 path  : ${{ steps.target.outputs.s3_path }}"
+          echo "🌐 Custom   : ${{ steps.target.outputs.preview_url }}"
+          echo "🔗 CF URL   : ${{ steps.target.outputs.cf_url }}"
+          echo ""
+          echo "Note: Custom domain requires DNS propagation of nextasy.co"
+          echo "CF URL works immediately as fallback."
+          echo "──────────────────────────────────────────"
+
+      # ── PR comment with preview URL ───────────────────────────────────────
+      - name: Comment on PR with preview URL
+        if: ${{ steps.target.outputs.is_main == 'false' }}
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const slug = '${{ steps.target.outputs.slug }}';
+            const previewUrl = '${{ steps.target.outputs.preview_url }}';
+            const cfUrl = '${{ steps.target.outputs.cf_url }}';
+            const branch = '${{ steps.target.outputs.raw_branch }}';
+
+            const body = [
+              `## 🚀 Preview Deploy`,
+              ``,
+              `**Branch:** \`${branch}\``,
+              ``,
+              `| | URL |`,
+              `|---|---|`,
+              `| 🌐 Custom domain | [${previewUrl}](${previewUrl}) *(when DNS propagates)* |`,
+              `| 🔗 CloudFront | [${cfUrl}](${cfUrl}) *(available now)* |`,
+              ``,
+              `> Custom domain requires \`nextasy.co\` DNS to fully propagate. CloudFront URL works immediately.`,
+            ].join('\n');
+
+            // Find open PR for this branch
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${branch}`,
+              state: 'open',
+            });
+
+            for (const pr of pulls) {
+              // Remove old preview comments
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+              });
+              for (const c of comments) {
+                if (c.body.includes('🚀 Preview Deploy') && c.user.type === 'Bot') {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: c.id,
+                  });
+                }
+              }
+              // Post updated comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body,
+              });
+            }
