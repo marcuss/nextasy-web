@@ -4,295 +4,601 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nextasy — Mobile Apps That Actually Matter</title>
-  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit. Apps that solve real problems.">
+  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0a0a0a;
-      --surface: #111;
-      --border: rgba(255,255,255,0.08);
-      --text: #fff;
-      --text-muted: rgba(255,255,255,0.5);
-      --accent: #7c3aed;
-      --accent-soft: rgba(124,58,237,0.15);
+      --black: #000000;
+      --white: #ffffff;
+      --coral: #ff4d6d;
+      --coral-soft: rgba(255,77,109,0.15);
+      --text-dim: rgba(255,255,255,0.35);
+      --text-mid: rgba(255,255,255,0.65);
     }
-    html { scroll-behavior: smooth; }
+
+    html { scroll-behavior: auto; }
+
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
     }
-    /* NAV */
+
+    /* ── NAV ── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 20px 40px;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 24px 48px;
       display: flex; align-items: center; justify-content: space-between;
-      background: rgba(10,10,10,0.8);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      mix-blend-mode: normal;
     }
-    .nav-logo {
-      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+
+    .logo {
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9);
     }
-    .nav-links { display: flex; gap: 32px; align-items: center; }
-    .nav-links a {
-      color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
+
     .nav-cta {
-      background: var(--accent); color: #fff !important;
-      padding: 8px 20px; border-radius: 8px; font-weight: 600;
+      color: var(--white); text-decoration: none;
+      font-size: 0.85rem; font-weight: 500;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.2s;
     }
-    .nav-cta:hover { background: #6d28d9 !important; color: #fff !important; }
-    /* HERO */
-    .hero {
+    .nav-cta:hover { border-color: var(--white); }
+
+    /* ── SCENE SECTIONS ── */
+    .scene {
       min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 120px 24px 80px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative;
     }
-    .hero-badge {
-      display: inline-block;
-      background: var(--accent-soft); color: #a78bfa;
-      border: 1px solid rgba(124,58,237,0.3);
-      padding: 6px 16px; border-radius: 100px;
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
-      text-transform: uppercase; margin-bottom: 32px;
+
+    /* ── SCENE 1: HERO ── */
+    .scene-hero {
+      background: var(--black);
+      padding: 120px 40px;
+      text-align: center;
+      overflow: hidden;
     }
-    h1 {
-      font-size: clamp(3rem, 10vw, 6rem);
-      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
-      margin-bottom: 24px;
+
+    .hero-headline {
+      font-size: clamp(4rem, 13vw, 11rem);
+      font-weight: 900; letter-spacing: -0.05em; line-height: 0.9;
+      position: relative;
     }
-    h1 span {
-      background: linear-gradient(135deg, #a78bfa, #ec4899, #f97316);
+
+    .hero-headline .word-1 {
+      display: block;
+      opacity: 0; transform: translateY(40px);
+      animation: wordReveal 1s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .hero-headline .word-2 {
+      display: block;
+      opacity: 0; transform: translateY(40px);
+      animation: wordReveal 1s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+      background: linear-gradient(90deg, #ff4d6d, #ff8fa3);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      color: var(--text-muted); max-width: 600px; margin: 0 auto 48px;
+
+    @keyframes wordReveal {
+      to { opacity: 1; transform: translateY(0); }
     }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 32px; border-radius: 10px;
-      font-weight: 600; font-size: 1rem; text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
+
+    .hero-sub-line {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 300; color: var(--text-mid);
+      letter-spacing: 0.02em;
+      margin-top: 48px; max-width: 520px;
+      opacity: 0; transform: translateY(20px);
+      animation: wordReveal 1s 1s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 0 30px rgba(124,58,237,0.3);
+
+    .hero-cta-wrap {
+      margin-top: 56px;
+      opacity: 0; transform: translateY(20px);
+      animation: wordReveal 1s 1.3s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    .btn-primary:hover { box-shadow: 0 0 50px rgba(124,58,237,0.5); }
-    .btn-outline {
-      border: 1px solid var(--border); color: var(--text);
-      background: rgba(255,255,255,0.03);
+
+    .btn-cinema {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--white); color: var(--black);
+      padding: 16px 36px; border-radius: 100px;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none;
+      transition: all 0.3s; letter-spacing: -0.01em;
     }
-    .btn-outline:hover { background: rgba(255,255,255,0.06); }
-    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    /* SECTION */
-    section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
-    .section-label {
-      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: #a78bfa; margin-bottom: 16px;
+    .btn-cinema:hover { background: rgba(255,255,255,0.85); transform: scale(1.03); }
+
+    .btn-cinema-outline {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; color: var(--white);
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 16px 36px; border-radius: 100px;
+      font-weight: 500; font-size: 0.95rem; text-decoration: none;
+      transition: all 0.3s; letter-spacing: -0.01em;
+      margin-left: 16px;
     }
-    h2 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px;
+    .btn-cinema-outline:hover { border-color: rgba(255,255,255,0.6); }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 48px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0; animation: wordReveal 1s 1.8s ease forwards;
     }
-    p.lead {
-      font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin-bottom: 48px;
+    .scroll-hint span { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      animation: scrollLine 2s 2s ease-in-out infinite;
     }
-    /* ABOUT */
-    .about-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
     }
-    .about-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 32px;
+
+    /* ── SCENE 2: STATEMENT ── */
+    .scene-statement {
+      background: var(--black);
+      padding: 160px 40px;
+      text-align: center;
     }
-    .about-card .icon { font-size: 2rem; margin-bottom: 16px; }
-    .about-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-    .about-card p { color: var(--text-muted); font-size: 0.9rem; }
-    /* APP */
-    .app-showcase {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; padding: 64px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+
+    .statement-text {
+      font-size: clamp(1.8rem, 5vw, 4.5rem);
+      font-weight: 700; letter-spacing: -0.03em;
+      line-height: 1.2; max-width: 900px;
     }
-    .app-content .app-tag {
-      display: inline-block; background: rgba(236,72,153,0.1); color: #f472b6;
-      border: 1px solid rgba(236,72,153,0.2); padding: 4px 12px;
-      border-radius: 100px; font-size: 0.75rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;
+
+    .statement-text .reveal-word {
+      display: inline-block;
+      color: var(--text-dim);
+      transition: color 0.6s ease;
     }
-    .app-content h2 { margin-bottom: 16px; }
-    .app-content p { color: var(--text-muted); margin-bottom: 32px; }
-    .features-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-    .features-list li {
-      display: flex; gap: 12px; align-items: flex-start;
-      font-size: 0.95rem;
-    }
-    .features-list li::before {
-      content: "✓"; color: #a78bfa; font-weight: 700;
-      flex-shrink: 0; margin-top: 2px;
-    }
-    /* iPhone mockup */
-    .phone-mockup {
-      width: 220px; height: 440px; margin: 0 auto;
-      background: #111; border-radius: 40px;
-      border: 2px solid rgba(255,255,255,0.1);
-      box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    .statement-text .reveal-word.lit { color: var(--white); }
+    .statement-text .reveal-word.coral { color: var(--coral) !important; }
+
+    /* ── SCENE 3: COUPLEPLAN ── */
+    .scene-app {
+      background: #0a0005;
+      padding: 120px 40px;
       position: relative; overflow: hidden;
+    }
+
+    .scene-app::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,77,109,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .app-layout {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+
+    .app-text .app-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--coral); margin-bottom: 24px;
+    }
+
+    .app-text h2 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 32px;
+    }
+
+    .app-text p {
+      font-size: 1.1rem; color: var(--text-mid);
+      line-height: 1.7; margin-bottom: 40px;
+    }
+
+    .feature-rows { display: flex; flex-direction: column; gap: 0; margin-bottom: 40px; }
+    .feature-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .feature-row:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .feature-row-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--coral-soft); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .feature-row-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+    .feature-row-text p { font-size: 0.85rem; color: var(--text-dim); }
+
+    /* iPhone cinematic mockup */
+    .iphone-wrap {
+      display: flex; justify-content: center; align-items: center;
+      position: relative;
+    }
+
+    .iphone {
+      width: 260px; height: 520px;
+      background: #111; border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow:
+        0 80px 120px rgba(0,0,0,0.7),
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        0 0 0 1px rgba(0,0,0,0.5);
+      position: relative; overflow: hidden;
+      transform: perspective(1000px) rotateY(-8deg) rotateX(2deg);
+      transition: transform 0.6s ease;
+    }
+
+    .iphone:hover {
+      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+
+    .iphone-notch {
+      width: 110px; height: 30px;
+      background: #000; border-radius: 0 0 22px 22px;
+      margin: 0 auto; position: relative; z-index: 10;
+    }
+
+    .iphone-screen {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #0d0020 0%, #120030 50%, #0a001a 100%);
       display: flex; flex-direction: column;
+      padding: 0;
     }
-    .phone-notch {
-      width: 100px; height: 28px; background: #000;
-      border-radius: 0 0 20px 20px; margin: 0 auto;
-      flex-shrink: 0;
+
+    .iphone-status {
+      height: 44px; display: flex;
+      align-items: flex-end; justify-content: space-between;
+      padding: 0 24px 8px; font-size: 0.65rem; color: rgba(255,255,255,0.6);
     }
-    .phone-screen {
-      flex: 1; padding: 20px 16px;
-      background: linear-gradient(160deg, #1a0533 0%, #0a0a2e 100%);
+
+    .iphone-app-content {
+      flex: 1; padding: 20px 20px;
       display: flex; flex-direction: column; gap: 12px;
     }
-    .phone-app-header {
-      text-align: center; font-size: 0.75rem; font-weight: 700; color: #e879f9;
-      letter-spacing: 0.05em; text-transform: uppercase;
+
+    .iphone-app-title {
+      font-size: 1.1rem; font-weight: 800;
+      color: #ff8fa3; letter-spacing: -0.02em;
     }
-    .phone-card {
-      background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+
+    .iphone-list-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
     }
-    .phone-card-title { font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
-    .phone-card-content { font-size: 0.75rem; color: #fff; font-weight: 600; }
-    /* FOOTER */
+    .iphone-list-item .item-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-pink { background: #ff4d6d; box-shadow: 0 0 8px #ff4d6d; }
+    .dot-purple { background: #8b5cf6; box-shadow: 0 0 8px #8b5cf6; }
+    .dot-blue { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+    .iphone-list-item .item-text { font-size: 0.7rem; color: rgba(255,255,255,0.7); }
+    .iphone-list-item .item-label {
+      font-size: 0.55rem; color: rgba(255,255,255,0.3);
+      display: block; margin-top: 2px;
+    }
+
+    .iphone-bottom-bar {
+      height: 30px; display: flex; align-items: center; justify-content: center;
+    }
+    .home-indicator {
+      width: 120px; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Parallax layers */
+    .parallax-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+    }
+    .blob-1 {
+      width: 400px; height: 400px;
+      background: rgba(255,77,109,0.08);
+      top: -100px; right: -100px;
+    }
+    .blob-2 {
+      width: 300px; height: 300px;
+      background: rgba(139,92,246,0.08);
+      bottom: -50px; left: -50px;
+    }
+
+    /* ── SCENE 4: ABOUT ── */
+    .scene-about {
+      background: var(--black);
+      padding: 160px 40px;
+      text-align: center;
+    }
+
+    .about-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 48px;
+    }
+
+    .about-big {
+      font-size: clamp(2rem, 6vw, 5rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1.05;
+      max-width: 900px; margin: 0 auto 48px;
+    }
+
+    .about-big .underline-coral {
+      text-decoration: underline; text-decoration-color: var(--coral);
+      text-underline-offset: 8px;
+    }
+
+    .about-body {
+      font-size: 1.15rem; color: var(--text-mid);
+      max-width: 580px; margin: 0 auto 64px;
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 24px;
-      text-align: center; color: var(--text-muted); font-size: 0.85rem;
+      padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--text-dim); font-size: 0.8rem;
     }
-    footer a { color: var(--text-muted); text-decoration: none; }
-    footer a:hover { color: var(--text); }
-    /* RESPONSIVE */
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: rgba(255,255,255,0.6); }
+
+    /* SCROLL PROGRESS */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px;
+      z-index: 9999; background: transparent;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--coral), #ff8fa3);
+      transition: width 0.1s linear;
+    }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      nav { padding: 16px 20px; }
-      .nav-links { display: none; }
-      .app-showcase { grid-template-columns: 1fr; padding: 32px; gap: 40px; }
-      .app-showcase .phone-wrapper { display: flex; justify-content: center; }
+      nav { padding: 20px 24px; }
+      .app-layout { grid-template-columns: 1fr; gap: 48px; }
+      .iphone { transform: none; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Progress bar -->
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- NAV -->
   <nav>
-    <div class="nav-logo">Nextasy</div>
-    <div class="nav-links">
-      <a href="#about">About</a>
-      <a href="#apps">Apps</a>
-      <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan →</a>
-    </div>
+    <div class="logo">Nextasy</div>
+    <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan →</a>
   </nav>
 
-  <main>
-    <div class="hero">
-      <div class="hero-badge">Mobile Studio</div>
-      <h1>Apps that <span>actually</span> matter</h1>
-      <p class="hero-sub">
-        Nextasy builds mobile apps that are useful, focused, and free of bullshit.
-        No dark patterns. No bloat. Just tools that solve real problems.
-      </p>
-      <div class="hero-btns">
-        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
-        <a href="#about" class="btn btn-outline">Learn More</a>
-      </div>
+  <!-- SCENE 1: HERO -->
+  <section class="scene scene-hero">
+    <h1 class="hero-headline">
+      <span class="word-1">Mobile apps</span>
+      <span class="word-2">without bullshit</span>
+    </h1>
+    <p class="hero-sub-line">
+      Nextasy is a mobile studio that builds apps that are useful, focused, and honest.
+      Nothing more.
+    </p>
+    <div class="hero-cta-wrap">
+      <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan</a>
+      <a href="#statement" class="btn-cinema-outline">Our philosophy</a>
     </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
 
-    <section id="about">
-      <div class="section-label">About Nextasy</div>
-      <h2>Built on a simple principle</h2>
-      <p class="lead">
-        Most apps are designed to capture attention. We build apps designed to solve problems — 
-        then get out of your way.
-      </p>
-      <div class="about-grid">
-        <div class="about-card">
-          <div class="icon">🎯</div>
-          <h3>Focused</h3>
-          <p>Every app does one thing exceptionally well. No feature bloat, no scope creep.</p>
+  <!-- SCENE 2: STATEMENT -->
+  <section class="scene scene-statement" id="statement">
+    <p class="statement-text" id="statement-text">
+      <span class="reveal-word">We</span>
+      <span class="reveal-word">believe</span>
+      <span class="reveal-word">the</span>
+      <span class="reveal-word">best</span>
+      <span class="reveal-word">apps</span>
+      <span class="reveal-word coral">solve</span>
+      <span class="reveal-word coral">one</span>
+      <span class="reveal-word coral">problem</span>
+      <span class="reveal-word">exceptionally</span>
+      <span class="reveal-word">well</span>
+      <span class="reveal-word">—</span>
+      <span class="reveal-word">and</span>
+      <span class="reveal-word coral">get</span>
+      <span class="reveal-word coral">out</span>
+      <span class="reveal-word coral">of</span>
+      <span class="reveal-word coral">your</span>
+      <span class="reveal-word coral">way.</span>
+    </p>
+  </section>
+
+  <!-- SCENE 3: COUPLEPLAN -->
+  <section class="scene scene-app" id="apps">
+    <div class="parallax-blob blob-1" data-speed="0.3"></div>
+    <div class="parallax-blob blob-2" data-speed="0.5"></div>
+    <div class="app-layout">
+      <div class="app-text" data-reveal>
+        <div class="app-label">First App · Available Now</div>
+        <h2>Couple<br>Plan</h2>
+        <p>
+          Shared planning for couples — without the chaos. From dinner reservations 
+          to dream vacations, everything in one place, synced in real time.
+        </p>
+        <div class="feature-rows">
+          <div class="feature-row">
+            <div class="feature-row-icon">📋</div>
+            <div class="feature-row-text">
+              <h4>Shared Lists</h4>
+              <p>Groceries, tasks, ideas — synced instantly between you two</p>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-row-icon">🗺️</div>
+            <div class="feature-row-text">
+              <h4>Trip Planning</h4>
+              <p>Plan destinations, save places, coordinate together</p>
+            </div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-row-icon">📅</div>
+            <div class="feature-row-text">
+              <h4>Date Ideas</h4>
+              <p>Build a shared list of date ideas and track what you've tried</p>
+            </div>
+          </div>
         </div>
-        <div class="about-card">
-          <div class="icon">🚫</div>
-          <h3>No Bullshit</h3>
-          <p>No dark patterns, no addictive mechanics, no manipulative design. Just clean utility.</p>
-        </div>
-        <div class="about-card">
-          <div class="icon">⚡</div>
-          <h3>Actually Useful</h3>
-          <p>We build things we'd use ourselves. If it doesn't solve a real problem, we don't ship it.</p>
-        </div>
+        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan free →</a>
       </div>
-    </section>
 
-    <section id="apps">
-      <div class="app-showcase">
-        <div class="app-content">
-          <div class="app-tag">First App</div>
-          <h2>CouplePlan</h2>
-          <p>
-            The shared planning app for couples — co-ordinate your life without the back-and-forth.
-            Shared to-dos, date ideas, trip planning, and more. All in one place.
-          </p>
-          <ul class="features-list">
-            <li>Shared lists and tasks that sync in real time</li>
-            <li>Plan dates, trips, and everyday errands together</li>
-            <li>Clean interface — no clutter, no subscriptions</li>
-            <li>Works offline, syncs when connected</li>
-          </ul>
-          <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
-        </div>
-        <div class="phone-wrapper">
-          <div class="phone-mockup">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="phone-app-header">CouplePlan</div>
-              <div class="phone-card">
-                <div class="phone-card-title">This weekend</div>
-                <div class="phone-card-content">🍝 Dinner at La Paloma</div>
+      <div class="iphone-wrap" data-reveal>
+        <div class="iphone" id="iphone-mockup">
+          <div class="iphone-screen">
+            <div class="iphone-notch"></div>
+            <div class="iphone-status">
+              <span>9:41</span>
+              <span>●●●</span>
+            </div>
+            <div class="iphone-app-content">
+              <div class="iphone-app-title">CouplePlan</div>
+              <div class="iphone-list-item">
+                <div class="item-dot dot-pink"></div>
+                <div class="item-text">
+                  🍝 Dinner at La Paloma
+                  <span class="item-label">This Saturday · Added by you</span>
+                </div>
               </div>
-              <div class="phone-card">
-                <div class="phone-card-title">To-do together</div>
-                <div class="phone-card-content">📦 Pick up Amazon package</div>
+              <div class="iphone-list-item">
+                <div class="item-dot dot-purple"></div>
+                <div class="item-text">
+                  ✈️ Lisbon in April
+                  <span class="item-label">Trip planned · 4 places saved</span>
+                </div>
               </div>
-              <div class="phone-card">
-                <div class="phone-card-title">Dream trip</div>
-                <div class="phone-card-content">✈️ Lisbon in April</div>
+              <div class="iphone-list-item">
+                <div class="item-dot dot-blue"></div>
+                <div class="item-text">
+                  🛒 Groceries (8 items)
+                  <span class="item-label">3 checked · Added by partner</span>
+                </div>
               </div>
-              <div class="phone-card">
-                <div class="phone-card-title">Groceries</div>
-                <div class="phone-card-content">🛒 3 items pending</div>
+              <div class="iphone-list-item">
+                <div class="item-dot dot-pink"></div>
+                <div class="item-text">
+                  🎬 Watch list
+                  <span class="item-label">12 movies · sorted by rating</span>
+                </div>
               </div>
+            </div>
+            <div class="iphone-bottom-bar">
+              <div class="home-indicator"></div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer>
-    <p>
-      &copy; 2026 <a href="https://nextasy.co">Nextasy</a> — Building useful apps, without bullshit.
+  <!-- SCENE 4: ABOUT -->
+  <section class="scene scene-about" id="about">
+    <div class="about-label">About Nextasy</div>
+    <h2 class="about-big">
+      A studio obsessed with<br>
+      <span class="underline-coral">useful, not addictive</span>
+    </h2>
+    <p class="about-body">
+      Nextasy is a small mobile studio. We build apps because we see real problems 
+      that deserve better solutions — not because we want your attention metrics.
+      Every Nextasy app ships with one goal: do its job and do it well.
     </p>
+    <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2026 Nextasy</span>
+    <a href="https://nextasy.co">nextasy.co</a>
   </footer>
+
+  <script>
+    // ── Scroll progress bar
+    const progressFill = document.getElementById('progress');
+    window.addEventListener('scroll', () => {
+      const total = document.body.scrollHeight - window.innerHeight;
+      const pct = (window.scrollY / total * 100).toFixed(1);
+      progressFill.style.width = pct + '%';
+    });
+
+    // ── Statement text word reveal on scroll
+    const words = document.querySelectorAll('#statement-text .reveal-word');
+    const stmtObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Light up words progressively
+          words.forEach((w, i) => {
+            setTimeout(() => w.classList.add('lit'), i * 80);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    stmtObserver.observe(document.getElementById('statement-text'));
+
+    // ── Parallax blobs on scroll
+    window.addEventListener('scroll', () => {
+      document.querySelectorAll('[data-speed]').forEach(el => {
+        const speed = parseFloat(el.dataset.speed);
+        const y = window.scrollY * speed;
+        el.style.transform = `translateY(${y}px)`;
+      });
+    });
+
+    // ── App section reveal on scroll
+    const revealElements = document.querySelectorAll('[data-reveal]');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }, i * 150);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    revealElements.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(40px)';
+      el.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)';
+      revealObs.observe(el);
+    });
+
+    // ── iPhone parallax tilt on mouse
+    const iphone = document.getElementById('iphone-mockup');
+    document.addEventListener('mousemove', (e) => {
+      const rect = iphone.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = (e.clientX - centerX) / window.innerWidth;
+      const dy = (e.clientY - centerY) / window.innerHeight;
+      iphone.style.transform = `perspective(1000px) rotateY(${dx * 15 - 8}deg) rotateX(${-dy * 10 + 2}deg)`;
+    });
+  </script>
 
 </body>
 </html>
