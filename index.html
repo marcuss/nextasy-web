@@ -3,296 +3,722 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nextasy — Mobile Apps That Actually Matter</title>
-  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit. Apps that solve real problems.">
+  <title>Nextasy — Apps Built Different</title>
+  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0a0a0a;
-      --surface: #111;
-      --border: rgba(255,255,255,0.08);
-      --text: #fff;
-      --text-muted: rgba(255,255,255,0.5);
-      --accent: #7c3aed;
-      --accent-soft: rgba(124,58,237,0.15);
+      --bg: #ffffff;
+      --text: #000000;
+      --text-dim: rgba(0,0,0,0.35);
+      --text-mid: rgba(0,0,0,0.6);
+      --border: rgba(0,0,0,0.08);
+      --accent-h: 255; /* hue, updated by JS */
+      --accent: hsl(var(--accent-h), 90%, 55%);
+      --accent-bg: hsl(var(--accent-h), 90%, 97%);
     }
+
     html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
     }
-    /* NAV */
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed; z-index: 9999;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, background 0.3s;
+      will-change: left, top;
+    }
+    .cursor-ring {
+      position: fixed; z-index: 9998;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: left 0.12s ease, top 0.12s ease, width 0.2s, height 0.2s, opacity 0.2s, background 0.3s, border-color 0.3s;
+      opacity: 0.4;
+    }
+
+    .cursor.hover { width: 48px; height: 48px; opacity: 0.3; }
+    .cursor-ring.hover { width: 80px; height: 80px; opacity: 0.15; }
+
+    /* ── NAV ── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 20px 40px;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 24px 48px;
       display: flex; align-items: center; justify-content: space-between;
-      background: rgba(10,10,10,0.8);
-      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
-      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+
+    .logo {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text);
     }
-    .nav-links { display: flex; gap: 32px; align-items: center; }
-    .nav-links a {
-      color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
+
     .nav-cta {
-      background: var(--accent); color: #fff !important;
-      padding: 8px 20px; border-radius: 8px; font-weight: 600;
+      display: inline-block;
+      background: var(--text); color: var(--bg);
+      padding: 10px 22px; border-radius: 100px;
+      font-weight: 700; font-size: 0.85rem; text-decoration: none;
+      transition: transform 0.2s, background 0.3s;
+      letter-spacing: -0.01em;
     }
-    .nav-cta:hover { background: #6d28d9 !important; color: #fff !important; }
-    /* HERO */
+    .nav-cta:hover { transform: scale(1.04); }
+
+    /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 120px 24px 80px;
-    }
-    .hero-badge {
-      display: inline-block;
-      background: var(--accent-soft); color: #a78bfa;
-      border: 1px solid rgba(124,58,237,0.3);
-      padding: 6px 16px; border-radius: 100px;
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
-      text-transform: uppercase; margin-bottom: 32px;
-    }
-    h1 {
-      font-size: clamp(3rem, 10vw, 6rem);
-      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
-      margin-bottom: 24px;
-    }
-    h1 span {
-      background: linear-gradient(135deg, #a78bfa, #ec4899, #f97316);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      color: var(--text-muted); max-width: 600px; margin: 0 auto 48px;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 32px; border-radius: 10px;
-      font-weight: 600; font-size: 1rem; text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 0 30px rgba(124,58,237,0.3);
-    }
-    .btn-primary:hover { box-shadow: 0 0 50px rgba(124,58,237,0.5); }
-    .btn-outline {
-      border: 1px solid var(--border); color: var(--text);
-      background: rgba(255,255,255,0.03);
-    }
-    .btn-outline:hover { background: rgba(255,255,255,0.06); }
-    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    /* SECTION */
-    section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
-    .section-label {
-      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: #a78bfa; margin-bottom: 16px;
-    }
-    h2 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px;
-    }
-    p.lead {
-      font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin-bottom: 48px;
-    }
-    /* ABOUT */
-    .about-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;
-    }
-    .about-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 32px;
-    }
-    .about-card .icon { font-size: 2rem; margin-bottom: 16px; }
-    .about-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-    .about-card p { color: var(--text-muted); font-size: 0.9rem; }
-    /* APP */
-    .app-showcase {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; padding: 64px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
-    }
-    .app-content .app-tag {
-      display: inline-block; background: rgba(236,72,153,0.1); color: #f472b6;
-      border: 1px solid rgba(236,72,153,0.2); padding: 4px 12px;
-      border-radius: 100px; font-size: 0.75rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;
-    }
-    .app-content h2 { margin-bottom: 16px; }
-    .app-content p { color: var(--text-muted); margin-bottom: 32px; }
-    .features-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-    .features-list li {
-      display: flex; gap: 12px; align-items: flex-start;
-      font-size: 0.95rem;
-    }
-    .features-list li::before {
-      content: "✓"; color: #a78bfa; font-weight: 700;
-      flex-shrink: 0; margin-top: 2px;
-    }
-    /* iPhone mockup */
-    .phone-mockup {
-      width: 220px; height: 440px; margin: 0 auto;
-      background: #111; border-radius: 40px;
-      border: 2px solid rgba(255,255,255,0.1);
-      box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
-      position: relative; overflow: hidden;
+      padding: 130px 48px 80px;
       display: flex; flex-direction: column;
+      justify-content: center;
+      position: relative; overflow: hidden;
     }
-    .phone-notch {
-      width: 100px; height: 28px; background: #000;
-      border-radius: 0 0 20px 20px; margin: 0 auto;
+
+    .hero-bg-text {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30vw; font-weight: 700;
+      color: rgba(0,0,0,0.03);
+      pointer-events: none; white-space: nowrap;
+      letter-spacing: -0.05em; line-height: 1;
+      user-select: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 32px;
+    }
+
+    .hero-h1 {
+      font-size: clamp(5rem, 15vw, 13rem);
+      font-weight: 700; letter-spacing: -0.05em; line-height: 0.9;
+      margin-bottom: 48px; position: relative;
+    }
+
+    .hero-h1 .line-1 { display: block; }
+    .hero-h1 .line-2 {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--text);
+    }
+
+    .hero-h1 .type-cursor {
+      display: inline-block; width: 4px;
+      background: var(--accent);
+      height: 0.85em; vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hero-bottom {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: var(--text-mid); max-width: 420px;
+      line-height: 1.6; font-weight: 400;
+    }
+
+    .hero-ctas {
+      display: flex; gap: 12px;
+    }
+
+    .btn-bold {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--text); color: var(--bg);
+      padding: 16px 32px; border-radius: 4px;
+      font-weight: 700; font-size: 1rem; text-decoration: none;
+      transition: transform 0.2s, background 0.3s;
+      letter-spacing: -0.01em;
+    }
+    .btn-bold:hover { transform: scale(1.04) rotate(-1deg); }
+
+    .btn-text {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text); font-weight: 600; font-size: 1rem;
+      text-decoration: none;
+      border-bottom: 2px solid var(--text);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .btn-text:hover { opacity: 0.6; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0; overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-track span {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); padding: 0 32px;
+    }
+    .marquee-track span.dot { color: var(--accent); font-size: 1rem; }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── ASYMMETRIC GRID ── */
+    .grid-section {
+      padding: 100px 48px;
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      grid-template-rows: auto auto;
+      gap: 24px;
+      max-width: 1400px; margin: 0 auto;
+    }
+
+    .grid-cell {
+      border: 1px solid var(--border);
+      border-radius: 4px; padding: 48px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+
+    .grid-cell:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+
+    .cell-number {
+      font-size: 8rem; font-weight: 700;
+      letter-spacing: -0.05em; line-height: 1;
+      color: transparent; -webkit-text-stroke: 1px rgba(0,0,0,0.12);
+      position: absolute; top: 24px; right: 32px;
+    }
+
+    .cell-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 16px;
+    }
+
+    .cell-h2 {
+      font-size: 2.5rem; font-weight: 700;
+      letter-spacing: -0.03em; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .cell-p {
+      font-size: 0.95rem; color: var(--text-mid);
+      line-height: 1.7;
+    }
+
+    /* Big manifesto cell */
+    .cell-manifesto {
+      grid-column: span 2;
+      background: var(--text); color: var(--bg);
+      border-color: transparent;
+    }
+    .cell-manifesto:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .cell-manifesto .cell-p { color: rgba(255,255,255,0.55); }
+
+    .manifesto-big {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700; letter-spacing: -0.04em;
+      line-height: 1.1; margin-bottom: 24px;
+    }
+    .manifesto-big .accent-word {
+      color: transparent; -webkit-text-stroke: 1.5px var(--accent);
+    }
+
+    /* ── COUPLEPLAN SECTION ── */
+    .app-section {
+      padding: 80px 48px 120px;
+      max-width: 1400px; margin: 0 auto;
+    }
+
+    .app-section-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 48px;
+    }
+
+    .app-big-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: start;
+    }
+
+    .app-big-left h2 {
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 700; letter-spacing: -0.05em;
+      line-height: 0.9; margin-bottom: 32px;
+    }
+
+    .app-big-left h2 em {
+      font-style: normal;
+      -webkit-text-stroke: 2px var(--text);
+      color: transparent;
+    }
+
+    .app-big-left p {
+      font-size: 1.1rem; color: var(--text-mid);
+      line-height: 1.7; margin-bottom: 40px;
+      max-width: 400px;
+    }
+
+    /* 3D phone perspective */
+    .phones-3d {
+      display: flex; gap: 20px;
+      perspective: 1000px;
+    }
+
+    .phone-3d {
+      flex: 1;
+      height: 480px;
+      background: #f0f0f0;
+      border-radius: 32px;
+      border: 1px solid rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      transform-origin: center bottom;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .phone-3d:first-child {
+      transform: rotateY(15deg) rotateX(3deg) translateY(20px);
+    }
+    .phone-3d:last-child {
+      transform: rotateY(-15deg) rotateX(3deg) translateY(20px);
+    }
+
+    .phones-3d:hover .phone-3d:first-child {
+      transform: rotateY(5deg) rotateX(1deg) translateY(0);
+    }
+    .phones-3d:hover .phone-3d:last-child {
+      transform: rotateY(-5deg) rotateX(1deg) translateY(0);
+    }
+
+    .phone-3d-content {
+      padding: 24px 20px;
+      height: 100%;
+      display: flex; flex-direction: column;
+      gap: 12px;
+    }
+
+    .p3d-title {
+      font-size: 0.9rem; font-weight: 700;
+      color: #000; letter-spacing: -0.02em;
+    }
+
+    .p3d-item {
+      background: #fff; border-radius: 10px;
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .p3d-item-color {
+      width: 8px; height: 8px; border-radius: 50%;
       flex-shrink: 0;
     }
-    .phone-screen {
-      flex: 1; padding: 20px 16px;
-      background: linear-gradient(160deg, #1a0533 0%, #0a0a2e 100%);
-      display: flex; flex-direction: column; gap: 12px;
+
+    .p3d-item-text {
+      font-size: 0.7rem; font-weight: 600;
+      color: rgba(0,0,0,0.7);
     }
-    .phone-app-header {
-      text-align: center; font-size: 0.75rem; font-weight: 700; color: #e879f9;
-      letter-spacing: 0.05em; text-transform: uppercase;
+    .p3d-item-sub {
+      font-size: 0.6rem; color: rgba(0,0,0,0.35);
+      display: block; margin-top: 2px;
     }
-    .phone-card {
-      background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+
+    .phone-3d.accent-phone {
+      background: var(--accent);
     }
-    .phone-card-title { font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
-    .phone-card-content { font-size: 0.75rem; color: #fff; font-weight: 600; }
-    /* FOOTER */
+    .phone-3d.accent-phone .p3d-title { color: rgba(255,255,255,0.9); }
+    .phone-3d.accent-phone .p3d-item { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.1); }
+    .phone-3d.accent-phone .p3d-item-text { color: rgba(255,255,255,0.9); }
+    .phone-3d.accent-phone .p3d-item-sub { color: rgba(255,255,255,0.5); }
+
+    /* ── HOVER ITEMS ── */
+    .hover-list { margin-top: 8px; }
+    .hover-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: padding-left 0.2s;
+    }
+    .hover-item:hover { padding-left: 8px; }
+    .hover-item:first-child { border-top: 1px solid var(--border); }
+
+    .hover-item-left {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hover-item-num {
+      font-size: 0.7rem; color: var(--text-dim); font-weight: 600;
+      width: 24px;
+    }
+    .hover-item-name {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .hover-item-arrow {
+      font-size: 1rem; color: var(--text-dim);
+      transition: transform 0.2s, color 0.2s;
+    }
+    .hover-item:hover .hover-item-arrow {
+      transform: translateX(4px);
+      color: var(--accent);
+    }
+
+    /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 40px 24px;
-      text-align: center; color: var(--text-muted); font-size: 0.85rem;
+      padding: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.85rem;
     }
-    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
     footer a:hover { color: var(--text); }
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      nav { padding: 16px 20px; }
-      .nav-links { display: none; }
-      .app-showcase { grid-template-columns: 1fr; padding: 32px; gap: 40px; }
-      .app-showcase .phone-wrapper { display: flex; justify-content: center; }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+      nav { padding: 16px 24px; }
+      .hero { padding: 110px 24px 60px; }
+      .hero-h1 { font-size: clamp(3.5rem, 18vw, 8rem); }
+      .grid-section { grid-template-columns: 1fr; padding: 60px 24px; }
+      .cell-manifesto { grid-column: span 1; }
+      .app-big-layout { grid-template-columns: 1fr; gap: 48px; }
+      .phones-3d { flex-direction: column; height: auto; }
+      .phone-3d { height: 200px; transform: none !important; }
+      .app-section { padding: 60px 24px 80px; }
+      footer { flex-direction: column; gap: 12px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- NAV -->
   <nav>
-    <div class="nav-logo">Nextasy</div>
-    <div class="nav-links">
-      <a href="#about">About</a>
-      <a href="#apps">Apps</a>
-      <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan →</a>
-    </div>
+    <div class="logo">Nextasy</div>
+    <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan</a>
   </nav>
 
-  <main>
-    <div class="hero">
-      <div class="hero-badge">Mobile Studio</div>
-      <h1>Apps that <span>actually</span> matter</h1>
-      <p class="hero-sub">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-text">NX</div>
+    <div class="hero-eyebrow">Mobile Studio · Est. 2026</div>
+    <h1 class="hero-h1">
+      <span class="line-1" id="typed-line">Apps</span>
+      <span class="line-2">Different<span class="type-cursor"></span></span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-tagline">
         Nextasy builds mobile apps that are useful, focused, and free of bullshit.
-        No dark patterns. No bloat. Just tools that solve real problems.
+        We ship one thing at a time and make it exceptional.
       </p>
-      <div class="hero-btns">
-        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
-        <a href="#about" class="btn btn-outline">Learn More</a>
+      <div class="hero-ctas">
+        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-bold">Try CouplePlan →</a>
+        <a href="#apps" class="btn-text">See our apps ↓</a>
       </div>
     </div>
+  </section>
 
-    <section id="about">
-      <div class="section-label">About Nextasy</div>
-      <h2>Built on a simple principle</h2>
-      <p class="lead">
-        Most apps are designed to capture attention. We build apps designed to solve problems — 
-        then get out of your way.
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>No bullshit</span><span class="dot">·</span>
+      <span>Useful apps</span><span class="dot">·</span>
+      <span>No dark patterns</span><span class="dot">·</span>
+      <span>CouplePlan</span><span class="dot">·</span>
+      <span>Mobile first</span><span class="dot">·</span>
+      <span>nextasy.co</span><span class="dot">·</span>
+      <span>No fluff</span><span class="dot">·</span>
+      <span>No bullshit</span><span class="dot">·</span>
+      <span>Useful apps</span><span class="dot">·</span>
+      <span>No dark patterns</span><span class="dot">·</span>
+      <span>CouplePlan</span><span class="dot">·</span>
+      <span>Mobile first</span><span class="dot">·</span>
+      <span>nextasy.co</span><span class="dot">·</span>
+      <span>No fluff</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ASYMMETRIC GRID -->
+  <div class="grid-section">
+    <div class="grid-cell reveal" style="transition-delay:0.05s">
+      <div class="cell-number">01</div>
+      <div class="cell-label">Philosophy</div>
+      <h2 class="cell-h2">Useful,<br>not addictive</h2>
+      <p class="cell-p">
+        The best apps do their job and get out of the way. We don't measure success 
+        in DAUs or session lengths — we measure it in problems solved.
       </p>
-      <div class="about-grid">
-        <div class="about-card">
-          <div class="icon">🎯</div>
-          <h3>Focused</h3>
-          <p>Every app does one thing exceptionally well. No feature bloat, no scope creep.</p>
-        </div>
-        <div class="about-card">
-          <div class="icon">🚫</div>
-          <h3>No Bullshit</h3>
-          <p>No dark patterns, no addictive mechanics, no manipulative design. Just clean utility.</p>
-        </div>
-        <div class="about-card">
-          <div class="icon">⚡</div>
-          <h3>Actually Useful</h3>
-          <p>We build things we'd use ourselves. If it doesn't solve a real problem, we don't ship it.</p>
+    </div>
+
+    <div class="grid-cell reveal" style="transition-delay:0.1s">
+      <div class="cell-number">02</div>
+      <div class="cell-label">Focus</div>
+      <h2 class="cell-h2">One thing<br>at a time</h2>
+      <p class="cell-p">
+        We ship one product, make it exceptional, then build the next. No feature farms.
+      </p>
+    </div>
+
+    <div class="grid-cell cell-manifesto reveal" style="transition-delay:0.15s">
+      <p class="manifesto-big">
+        "The world has enough apps that want your
+        <span class="accent-word">attention.</span>
+        We build apps that deserve
+        <span class="accent-word">your trust.</span>"
+      </p>
+      <p class="cell-p" style="max-width: 500px;">— Nextasy</p>
+    </div>
+  </div>
+
+  <!-- COUPLEPLAN SECTION -->
+  <div class="app-section" id="apps">
+    <div class="app-section-label">Apps · 001</div>
+    <div class="app-big-layout">
+      <div class="app-big-left reveal">
+        <h2>Couple<br><em>Plan</em></h2>
+        <p>
+          Shared planning for couples without the chaos. 
+          Real-time synced lists, trip planning, date ideas — all in one place.
+          No subscription for things you already own.
+        </p>
+        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-bold" style="margin-bottom: 48px;">
+          Try CouplePlan →
+        </a>
+
+        <div class="hover-list">
+          <div class="hover-item">
+            <div class="hover-item-left">
+              <span class="hover-item-num">01</span>
+              <span class="hover-item-name">Shared Lists & Tasks</span>
+            </div>
+            <span class="hover-item-arrow">→</span>
+          </div>
+          <div class="hover-item">
+            <div class="hover-item-left">
+              <span class="hover-item-num">02</span>
+              <span class="hover-item-name">Trip Planning Together</span>
+            </div>
+            <span class="hover-item-arrow">→</span>
+          </div>
+          <div class="hover-item">
+            <div class="hover-item-left">
+              <span class="hover-item-num">03</span>
+              <span class="hover-item-name">Date Ideas & Events</span>
+            </div>
+            <span class="hover-item-arrow">→</span>
+          </div>
+          <div class="hover-item">
+            <div class="hover-item-left">
+              <span class="hover-item-num">04</span>
+              <span class="hover-item-name">Works Offline</span>
+            </div>
+            <span class="hover-item-arrow">→</span>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section id="apps">
-      <div class="app-showcase">
-        <div class="app-content">
-          <div class="app-tag">First App</div>
-          <h2>CouplePlan</h2>
-          <p>
-            The shared planning app for couples — co-ordinate your life without the back-and-forth.
-            Shared to-dos, date ideas, trip planning, and more. All in one place.
-          </p>
-          <ul class="features-list">
-            <li>Shared lists and tasks that sync in real time</li>
-            <li>Plan dates, trips, and everyday errands together</li>
-            <li>Clean interface — no clutter, no subscriptions</li>
-            <li>Works offline, syncs when connected</li>
-          </ul>
-          <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
+      <div class="phones-3d reveal" id="phones-3d" style="transition-delay:0.1s">
+        <div class="phone-3d">
+          <div class="phone-3d-content">
+            <div class="p3d-title">CouplePlan</div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:#ff4d6d"></div>
+              <div class="p3d-item-text">
+                Dinner at La Paloma
+                <span class="p3d-item-sub">Saturday · 8:00 PM</span>
+              </div>
+            </div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:#8b5cf6"></div>
+              <div class="p3d-item-text">
+                Groceries (8 items)
+                <span class="p3d-item-sub">3 checked ✓</span>
+              </div>
+            </div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:#3b82f6"></div>
+              <div class="p3d-item-text">
+                Lisbon in April ✈️
+                <span class="p3d-item-sub">Trip · 4 places saved</span>
+              </div>
+            </div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:#f97316"></div>
+              <div class="p3d-item-text">
+                Watch list 🎬
+                <span class="p3d-item-sub">12 movies</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="phone-wrapper">
-          <div class="phone-mockup">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="phone-app-header">CouplePlan</div>
-              <div class="phone-card">
-                <div class="phone-card-title">This weekend</div>
-                <div class="phone-card-content">🍝 Dinner at La Paloma</div>
+
+        <div class="phone-3d accent-phone">
+          <div class="phone-3d-content">
+            <div class="p3d-title">Date Ideas</div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:rgba(255,255,255,0.6)"></div>
+              <div class="p3d-item-text">
+                Cooking class 👨‍🍳
+                <span class="p3d-item-sub">Both want to try</span>
               </div>
-              <div class="phone-card">
-                <div class="phone-card-title">To-do together</div>
-                <div class="phone-card-content">📦 Pick up Amazon package</div>
+            </div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:rgba(255,255,255,0.6)"></div>
+              <div class="p3d-item-text">
+                Sunset hike 🌅
+                <span class="p3d-item-sub">Done · loved it ♥</span>
               </div>
-              <div class="phone-card">
-                <div class="phone-card-title">Dream trip</div>
-                <div class="phone-card-content">✈️ Lisbon in April</div>
-              </div>
-              <div class="phone-card">
-                <div class="phone-card-title">Groceries</div>
-                <div class="phone-card-content">🛒 3 items pending</div>
+            </div>
+            <div class="p3d-item">
+              <div class="p3d-item-color" style="background:rgba(255,255,255,0.6)"></div>
+              <div class="p3d-item-text">
+                Board game night 🎲
+                <span class="p3d-item-sub">This Friday</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
+  <!-- FOOTER -->
   <footer>
-    <p>
-      &copy; 2026 <a href="https://nextasy.co">Nextasy</a> — Building useful apps, without bullshit.
-    </p>
+    <span style="font-weight:700">Nextasy</span>
+    <span style="color:var(--text-dim)">Building apps that matter</span>
+    <a href="https://nextasy.co">nextasy.co</a>
   </footer>
+
+  <script>
+    // ── Dynamic hue from mouse
+    document.addEventListener('mousemove', (e) => {
+      const hue = Math.round((e.clientX / window.innerWidth) * 60 + 220); // range: 220-280 (blue-purple)
+      document.documentElement.style.setProperty('--accent-h', hue);
+
+      // Custom cursor
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      setTimeout(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top = e.clientY + 'px';
+      }, 80);
+    });
+
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+
+    // Cursor hover effect
+    document.querySelectorAll('a, button, .hover-item, .grid-cell, .phone-3d').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.classList.add('hover');
+        ring.classList.add('hover');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('hover');
+        ring.classList.remove('hover');
+      });
+    });
+
+    // ── Typewriter effect on hero
+    const words = ['Apps', 'Tools', 'Apps'];
+    let wIdx = 0, cIdx = 0, deleting = false;
+    const typedEl = document.getElementById('typed-line');
+
+    function type() {
+      const word = words[wIdx];
+      if (!deleting) {
+        cIdx++;
+        typedEl.textContent = word.slice(0, cIdx);
+        if (cIdx === word.length) {
+          deleting = true;
+          setTimeout(type, 2000);
+          return;
+        }
+      } else {
+        cIdx--;
+        typedEl.textContent = word.slice(0, cIdx);
+        if (cIdx === 0) {
+          deleting = false;
+          wIdx = (wIdx + 1) % words.length;
+        }
+      }
+      setTimeout(type, deleting ? 60 : 120);
+    }
+    setTimeout(type, 1500);
+
+    // ── Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));
+
+    // ── 3D phones react to mouse
+    const phonesWrap = document.getElementById('phones-3d');
+    if (phonesWrap) {
+      phonesWrap.addEventListener('mousemove', (e) => {
+        const rect = phonesWrap.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width/2) / rect.width;
+        const y = (e.clientY - rect.top - rect.height/2) / rect.height;
+        const [p1, p2] = phonesWrap.querySelectorAll('.phone-3d');
+        p1.style.transform = `rotateY(${x * 20 + 8}deg) rotateX(${-y * 10 + 3}deg) translateY(${y * 10}px)`;
+        p2.style.transform = `rotateY(${x * 20 - 8}deg) rotateX(${-y * 10 + 3}deg) translateY(${y * 10}px)`;
+      });
+      phonesWrap.addEventListener('mouseleave', () => {
+        const [p1, p2] = phonesWrap.querySelectorAll('.phone-3d');
+        p1.style.transform = 'rotateY(15deg) rotateX(3deg) translateY(20px)';
+        p2.style.transform = 'rotateY(-15deg) rotateX(3deg) translateY(20px)';
+      });
+    }
+  </script>
 
 </body>
 </html>
