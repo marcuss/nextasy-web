@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nextasy — Mobile Apps That Actually Matter</title>
-  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit.">
+  <title>Nextasy — Apps Built Different</title>
+  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit. We ship one thing at a time and make it exceptional.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -18,15 +18,27 @@
       --coral-soft: rgba(255,77,109,0.15);
       --text-dim: rgba(255,255,255,0.35);
       --text-mid: rgba(255,255,255,0.65);
+      --bg-dynamic: hsl(0, 0%, 0%);
     }
 
-    html { scroll-behavior: auto; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--black);
+      background: var(--bg-dynamic);
       color: var(--white);
       overflow-x: hidden;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px;
+      z-index: 9999;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--coral), #ff8fa3);
+      transition: width 0.08s linear;
     }
 
     /* ── NAV ── */
@@ -34,12 +46,25 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
       padding: 24px 48px;
       display: flex; align-items: center; justify-content: space-between;
-      mix-blend-mode: normal;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 16px 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
+    .nav-brand { display: flex; flex-direction: column; gap: 2px; }
     .logo {
       font-size: 1rem; font-weight: 700; letter-spacing: 0.08em;
       text-transform: uppercase; color: rgba(255,255,255,0.9);
+    }
+    .nav-eyebrow {
+      font-size: 0.6rem; font-weight: 400;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim);
     }
 
     .nav-cta {
@@ -59,35 +84,111 @@
       position: relative;
     }
 
+    /* ═══════════════════════════════════════
+       APPLE-STYLE SCROLL ANIMATIONS
+    ═══════════════════════════════════════ */
+
+    /* Generic animate-on-scroll container */
+    .animate-on-scroll { /* observer attaches here */ }
+
+    /* Fade + slide up — generic elements */
+    .anim-fade-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .in-view .anim-fade-up,
+    .anim-fade-up.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Staggered children */
+    .anim-fade-up:nth-child(1) { transition-delay: 0.05s; }
+    .anim-fade-up:nth-child(2) { transition-delay: 0.15s; }
+    .anim-fade-up:nth-child(3) { transition-delay: 0.25s; }
+    .anim-fade-up:nth-child(4) { transition-delay: 0.35s; }
+
+    /* Phone mockup — scale + fade */
+    .phone-mockup {
+      opacity: 0;
+      transform: translateY(80px) scale(0.92);
+      transition: opacity 1s cubic-bezier(0.16,1,0.3,1),
+                  transform 1s cubic-bezier(0.16,1,0.3,1);
+      transition-delay: 0.2s;
+    }
+    .animate-on-scroll.in-view .phone-mockup {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Statement / manifesto lines — clip reveal from bottom */
+    .statement-line {
+      display: block;
+      overflow: hidden;
+      line-height: 1.15;
+    }
+    .statement-line span {
+      display: block;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity 0.75s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.75s cubic-bezier(0.16,1,0.3,1);
+    }
+    .animate-on-scroll.in-view .statement-line:nth-child(1) span { transition-delay: 0.00s; opacity: 1; transform: translateY(0); }
+    .animate-on-scroll.in-view .statement-line:nth-child(2) span { transition-delay: 0.12s; opacity: 1; transform: translateY(0); }
+    .animate-on-scroll.in-view .statement-line:nth-child(3) span { transition-delay: 0.24s; opacity: 1; transform: translateY(0); }
+
+    /* Manifesto reveal (individual lines) */
+    .manifesto-line {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .manifesto-line.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Feature items staggered */
+    .feature-item {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .animate-on-scroll.in-view .feature-item:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.08s; }
+    .animate-on-scroll.in-view .feature-item:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.18s; }
+    .animate-on-scroll.in-view .feature-item:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.28s; }
+    .animate-on-scroll.in-view .feature-item:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.38s; }
+
     /* ── SCENE 1: HERO ── */
     .scene-hero {
-      background: var(--black);
+      background: transparent;
       padding: 120px 40px;
       text-align: center;
       overflow: hidden;
     }
 
     .hero-headline {
-      font-size: clamp(4rem, 13vw, 11rem);
+      font-size: clamp(4.5rem, 14vw, 12rem);
       font-weight: 900; letter-spacing: -0.05em; line-height: 0.9;
-      position: relative;
     }
 
+    /* Hero words animate in on load */
     .hero-headline .word-1 {
       display: block;
-      opacity: 0; transform: translateY(40px);
-      animation: wordReveal 1s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+      opacity: 0; transform: translateY(50px);
+      animation: wordReveal 1s 0.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-
     .hero-headline .word-2 {
       display: block;
-      opacity: 0; transform: translateY(40px);
-      animation: wordReveal 1s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+      opacity: 0; transform: translateY(50px);
+      animation: wordReveal 1s 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
       background: linear-gradient(90deg, #ff4d6d, #ff8fa3);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
     @keyframes wordReveal {
       to { opacity: 1; transform: translateY(0); }
     }
@@ -96,15 +197,16 @@
       font-size: clamp(1rem, 2vw, 1.3rem);
       font-weight: 300; color: var(--text-mid);
       letter-spacing: 0.02em;
-      margin-top: 48px; max-width: 520px;
+      margin-top: 52px; max-width: 560px;
       opacity: 0; transform: translateY(20px);
-      animation: wordReveal 1s 1s cubic-bezier(0.16,1,0.3,1) forwards;
+      animation: wordReveal 1s 0.85s cubic-bezier(0.16,1,0.3,1) forwards;
     }
 
     .hero-cta-wrap {
       margin-top: 56px;
+      display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
       opacity: 0; transform: translateY(20px);
-      animation: wordReveal 1s 1.3s cubic-bezier(0.16,1,0.3,1) forwards;
+      animation: wordReveal 1s 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
     }
 
     .btn-cinema {
@@ -123,7 +225,6 @@
       padding: 16px 36px; border-radius: 100px;
       font-weight: 500; font-size: 0.95rem; text-decoration: none;
       transition: all 0.3s; letter-spacing: -0.01em;
-      margin-left: 16px;
     }
     .btn-cinema-outline:hover { border-color: rgba(255,255,255,0.6); }
 
@@ -140,45 +241,44 @@
       animation: scrollLine 2s 2s ease-in-out infinite;
     }
     @keyframes scrollLine {
-      0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
-      50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
-      51% { transform: scaleY(1); transform-origin: bottom; }
+      0%   { transform: scaleY(0); transform-origin: top;    opacity: 1; }
+      50%  { transform: scaleY(1); transform-origin: top;    opacity: 1; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
       100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
     }
 
-    /* ── SCENE 2: STATEMENT ── */
-    .scene-statement {
-      background: var(--black);
-      padding: 160px 40px;
+    /* ── SCENE 2: MANIFESTO ── */
+    .scene-manifesto {
+      padding: 180px 40px;
       text-align: center;
+      position: relative;
     }
-
-    .statement-text {
-      font-size: clamp(1.8rem, 5vw, 4.5rem);
+    .manifesto-section {
+      max-width: 900px; margin: 0 auto;
+    }
+    .manifesto-quote {
+      font-size: clamp(1.6rem, 4.5vw, 4rem);
       font-weight: 700; letter-spacing: -0.03em;
-      line-height: 1.2; max-width: 900px;
+      line-height: 1.25;
     }
-
-    .statement-text .reveal-word {
-      display: inline-block;
-      color: var(--text-dim);
-      transition: color 0.6s ease;
+    .manifesto-attr {
+      font-size: 0.85rem; font-weight: 400;
+      color: var(--text-dim); letter-spacing: 0.1em;
+      margin-top: 32px; text-transform: uppercase;
     }
-    .statement-text .reveal-word.lit { color: var(--white); }
-    .statement-text .reveal-word.coral { color: var(--coral) !important; }
 
     /* ── SCENE 3: COUPLEPLAN ── */
     .scene-app {
-      background: #0a0005;
+      background: #07000f;
       padding: 120px 40px;
       position: relative; overflow: hidden;
     }
-
     .scene-app::before {
       content: '';
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 800px; height: 800px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,77,109,0.06) 0%, transparent 70%);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px; height: 900px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,77,109,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -193,38 +293,37 @@
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--coral); margin-bottom: 24px;
     }
-
     .app-text h2 {
       font-size: clamp(2.5rem, 6vw, 5rem);
       font-weight: 900; letter-spacing: -0.04em; line-height: 1;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
-
-    .app-text p {
+    .app-text p.app-desc {
       font-size: 1.1rem; color: var(--text-mid);
       line-height: 1.7; margin-bottom: 40px;
     }
 
     .feature-rows { display: flex; flex-direction: column; gap: 0; margin-bottom: 40px; }
-    .feature-row {
+    .feature-item {
       display: flex; align-items: center; gap: 16px;
       padding: 18px 0;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .feature-row:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
-    .feature-row-icon {
+    .feature-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .feature-icon {
       width: 40px; height: 40px; border-radius: 10px;
       background: var(--coral-soft); display: flex;
       align-items: center; justify-content: center;
       font-size: 1.1rem; flex-shrink: 0;
     }
-    .feature-row-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
-    .feature-row-text p { font-size: 0.85rem; color: var(--text-dim); }
+    .feature-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+    .feature-text p  { font-size: 0.85rem; color: var(--text-dim); }
 
-    /* iPhone cinematic mockup */
-    .iphone-wrap {
+    /* ── PHONE MOCKUP ── */
+    .phone-wrap {
       display: flex; justify-content: center; align-items: center;
       position: relative;
+      will-change: transform;
     }
 
     .iphone {
@@ -239,59 +338,47 @@
       transform: perspective(1000px) rotateY(-8deg) rotateX(2deg);
       transition: transform 0.6s ease;
     }
-
     .iphone:hover {
       transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
     }
-
     .iphone-notch {
       width: 110px; height: 30px;
       background: #000; border-radius: 0 0 22px 22px;
       margin: 0 auto; position: relative; z-index: 10;
     }
-
     .iphone-screen {
       position: absolute; inset: 0;
       background: linear-gradient(180deg, #0d0020 0%, #120030 50%, #0a001a 100%);
       display: flex; flex-direction: column;
-      padding: 0;
     }
-
     .iphone-status {
       height: 44px; display: flex;
       align-items: flex-end; justify-content: space-between;
       padding: 0 24px 8px; font-size: 0.65rem; color: rgba(255,255,255,0.6);
     }
-
     .iphone-app-content {
-      flex: 1; padding: 20px 20px;
+      flex: 1; padding: 20px;
       display: flex; flex-direction: column; gap: 12px;
     }
-
     .iphone-app-title {
       font-size: 1.1rem; font-weight: 800;
       color: #ff8fa3; letter-spacing: -0.02em;
     }
-
     .iphone-list-item {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px; padding: 12px 14px;
       display: flex; align-items: center; gap: 12px;
     }
-    .iphone-list-item .item-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0;
+    .item-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
     }
-    .dot-pink { background: #ff4d6d; box-shadow: 0 0 8px #ff4d6d; }
+    .dot-pink   { background: #ff4d6d; box-shadow: 0 0 8px #ff4d6d; }
     .dot-purple { background: #8b5cf6; box-shadow: 0 0 8px #8b5cf6; }
-    .dot-blue { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
-    .iphone-list-item .item-text { font-size: 0.7rem; color: rgba(255,255,255,0.7); }
-    .iphone-list-item .item-label {
-      font-size: 0.55rem; color: rgba(255,255,255,0.3);
-      display: block; margin-top: 2px;
-    }
-
+    .dot-blue   { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+    .dot-green  { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .item-text  { font-size: 0.7rem; color: rgba(255,255,255,0.7); }
+    .item-label { font-size: 0.55rem; color: rgba(255,255,255,0.3); display: block; margin-top: 2px; }
     .iphone-bottom-bar {
       height: 30px; display: flex; align-items: center; justify-content: center;
     }
@@ -300,46 +387,55 @@
       background: rgba(255,255,255,0.2);
     }
 
-    /* Parallax layers */
+    /* Parallax blobs */
     .parallax-blob {
       position: absolute; border-radius: 50%;
       filter: blur(80px); pointer-events: none;
     }
-    .blob-1 {
-      width: 400px; height: 400px;
-      background: rgba(255,77,109,0.08);
-      top: -100px; right: -100px;
+    .blob-1 { width: 400px; height: 400px; background: rgba(255,77,109,0.08); top: -100px; right: -100px; }
+    .blob-2 { width: 300px; height: 300px; background: rgba(139,92,246,0.08); bottom: -50px; left: -50px; }
+
+    /* ── SCENE 4: FOCUS CELL ── */
+    .scene-focus {
+      padding: 140px 40px;
+      text-align: center;
     }
-    .blob-2 {
-      width: 300px; height: 300px;
-      background: rgba(139,92,246,0.08);
-      bottom: -50px; left: -50px;
+    .focus-grid {
+      max-width: 800px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .focus-cell {
+      padding: 64px 48px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .focus-cell h3 {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 900; letter-spacing: -0.04em;
+      line-height: 1.05; margin-bottom: 16px;
+    }
+    .focus-cell p {
+      font-size: 0.95rem; color: var(--text-mid); line-height: 1.65;
     }
 
-    /* ── SCENE 4: ABOUT ── */
+    /* ── SCENE 5: ABOUT ── */
     .scene-about {
-      background: var(--black);
       padding: 160px 40px;
       text-align: center;
     }
-
     .about-label {
       font-size: 0.7rem; font-weight: 700;
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--text-dim); margin-bottom: 48px;
     }
-
     .about-big {
       font-size: clamp(2rem, 6vw, 5rem);
       font-weight: 900; letter-spacing: -0.04em; line-height: 1.05;
       max-width: 900px; margin: 0 auto 48px;
     }
-
     .about-big .underline-coral {
       text-decoration: underline; text-decoration-color: var(--coral);
       text-underline-offset: 8px;
     }
-
     .about-body {
       font-size: 1.15rem; color: var(--text-mid);
       max-width: 580px; margin: 0 auto 64px;
@@ -348,29 +444,25 @@
 
     /* ── FOOTER ── */
     footer {
-      padding: 48px; border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px;
+      border-top: 1px solid rgba(255,255,255,0.06);
       display: flex; align-items: center; justify-content: space-between;
       color: var(--text-dim); font-size: 0.8rem;
+    }
+    footer .footer-tagline {
+      font-size: 0.75rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-dim);
     }
     footer a { color: var(--text-dim); text-decoration: none; }
     footer a:hover { color: rgba(255,255,255,0.6); }
 
-    /* SCROLL PROGRESS */
-    .progress-bar {
-      position: fixed; top: 0; left: 0; right: 0; height: 2px;
-      z-index: 9999; background: transparent;
-    }
-    .progress-fill {
-      height: 100%; width: 0%;
-      background: linear-gradient(90deg, var(--coral), #ff8fa3);
-      transition: width 0.1s linear;
-    }
-
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
       .app-layout { grid-template-columns: 1fr; gap: 48px; }
       .iphone { transform: none; }
+      .focus-grid { grid-template-columns: 1fr; }
       footer { flex-direction: column; gap: 12px; text-align: center; }
     }
   </style>
@@ -381,24 +473,27 @@
   <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
   <!-- NAV -->
-  <nav>
-    <div class="logo">Nextasy</div>
+  <nav id="nav">
+    <div class="nav-brand">
+      <div class="logo">Nextasy</div>
+      <div class="nav-eyebrow">Mobile Studio · Est. 2026</div>
+    </div>
     <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan →</a>
   </nav>
 
   <!-- SCENE 1: HERO -->
   <section class="scene scene-hero">
     <h1 class="hero-headline">
-      <span class="word-1">Mobile apps</span>
-      <span class="word-2">without bullshit</span>
+      <span class="word-1">Apps</span>
+      <span class="word-2">Different.</span>
     </h1>
     <p class="hero-sub-line">
-      Nextasy is a mobile studio that builds apps that are useful, focused, and honest.
-      Nothing more.
+      Nextasy builds mobile apps that are useful, focused, and free of bullshit.
+      We ship one thing at a time and make it exceptional.
     </p>
     <div class="hero-cta-wrap">
-      <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan</a>
-      <a href="#statement" class="btn-cinema-outline">Our philosophy</a>
+      <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan →</a>
+      <a href="#apps" class="btn-cinema-outline">See our apps ↓</a>
     </div>
     <div class="scroll-hint">
       <div class="scroll-line"></div>
@@ -406,69 +501,66 @@
     </div>
   </section>
 
-  <!-- SCENE 2: STATEMENT -->
-  <section class="scene scene-statement" id="statement">
-    <p class="statement-text" id="statement-text">
-      <span class="reveal-word">We</span>
-      <span class="reveal-word">believe</span>
-      <span class="reveal-word">the</span>
-      <span class="reveal-word">best</span>
-      <span class="reveal-word">apps</span>
-      <span class="reveal-word coral">solve</span>
-      <span class="reveal-word coral">one</span>
-      <span class="reveal-word coral">problem</span>
-      <span class="reveal-word">exceptionally</span>
-      <span class="reveal-word">well</span>
-      <span class="reveal-word">—</span>
-      <span class="reveal-word">and</span>
-      <span class="reveal-word coral">get</span>
-      <span class="reveal-word coral">out</span>
-      <span class="reveal-word coral">of</span>
-      <span class="reveal-word coral">your</span>
-      <span class="reveal-word coral">way.</span>
-    </p>
+  <!-- SCENE 2: MANIFESTO -->
+  <section class="scene scene-manifesto">
+    <div class="manifesto-section">
+      <div class="manifesto-quote">
+        <div class="manifesto-line">The world has enough apps</div>
+        <div class="manifesto-line">that want your attention.</div>
+        <div class="manifesto-line">We build apps that deserve your trust.</div>
+      </div>
+      <p class="manifesto-attr manifesto-line">— Nextasy</p>
+    </div>
   </section>
 
   <!-- SCENE 3: COUPLEPLAN -->
   <section class="scene scene-app" id="apps">
     <div class="parallax-blob blob-1" data-speed="0.3"></div>
     <div class="parallax-blob blob-2" data-speed="0.5"></div>
-    <div class="app-layout">
-      <div class="app-text" data-reveal>
-        <div class="app-label">First App · Available Now</div>
-        <h2>Couple<br>Plan</h2>
-        <p>
-          Shared planning for couples — without the chaos. From dinner reservations 
-          to dream vacations, everything in one place, synced in real time.
+    <div class="app-layout animate-on-scroll">
+      <div class="app-text">
+        <div class="app-label anim-fade-up">First App · Available Now</div>
+        <h2 class="anim-fade-up">Couple<br>Plan</h2>
+        <p class="app-desc anim-fade-up">
+          Shared planning for couples without the chaos. Real-time synced lists, 
+          trip planning, date ideas — all in one place. No subscription for things 
+          you already own.
         </p>
         <div class="feature-rows">
-          <div class="feature-row">
-            <div class="feature-row-icon">📋</div>
-            <div class="feature-row-text">
-              <h4>Shared Lists</h4>
+          <div class="feature-item">
+            <div class="feature-icon">📋</div>
+            <div class="feature-text">
+              <h4>Shared Lists &amp; Tasks</h4>
               <p>Groceries, tasks, ideas — synced instantly between you two</p>
             </div>
           </div>
-          <div class="feature-row">
-            <div class="feature-row-icon">🗺️</div>
-            <div class="feature-row-text">
-              <h4>Trip Planning</h4>
-              <p>Plan destinations, save places, coordinate together</p>
+          <div class="feature-item">
+            <div class="feature-icon">🗺️</div>
+            <div class="feature-text">
+              <h4>Trip Planning Together</h4>
+              <p>Plan destinations, save places, coordinate effortlessly</p>
             </div>
           </div>
-          <div class="feature-row">
-            <div class="feature-row-icon">📅</div>
-            <div class="feature-row-text">
-              <h4>Date Ideas</h4>
+          <div class="feature-item">
+            <div class="feature-icon">📅</div>
+            <div class="feature-text">
+              <h4>Date Ideas &amp; Events</h4>
               <p>Build a shared list of date ideas and track what you've tried</p>
             </div>
           </div>
+          <div class="feature-item">
+            <div class="feature-icon">📶</div>
+            <div class="feature-text">
+              <h4>Works Offline</h4>
+              <p>Everything syncs when you're back — no connectivity required</p>
+            </div>
+          </div>
         </div>
-        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan free →</a>
+        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema anim-fade-up">Try CouplePlan free →</a>
       </div>
 
-      <div class="iphone-wrap" data-reveal>
-        <div class="iphone" id="iphone-mockup">
+      <div class="phone-wrap">
+        <div class="iphone phone-mockup" id="iphone-mockup">
           <div class="iphone-screen">
             <div class="iphone-notch"></div>
             <div class="iphone-status">
@@ -499,10 +591,10 @@
                 </div>
               </div>
               <div class="iphone-list-item">
-                <div class="item-dot dot-pink"></div>
+                <div class="item-dot dot-green"></div>
                 <div class="item-text">
                   🎬 Watch list
-                  <span class="item-label">12 movies · sorted by rating</span>
+                  <span class="item-label">Synced · works offline</span>
                 </div>
               </div>
             </div>
@@ -515,88 +607,124 @@
     </div>
   </section>
 
-  <!-- SCENE 4: ABOUT -->
+  <!-- SCENE 4: FOCUS CELL -->
+  <section class="scene scene-focus">
+    <div class="focus-grid animate-on-scroll">
+      <div class="focus-cell anim-fade-up">
+        <h3>One thing<br>at a time.</h3>
+        <p>We ship one product, make it exceptional, then build the next. No feature farms.</p>
+      </div>
+      <div class="focus-cell anim-fade-up">
+        <h3>Useful,<br>not addictive.</h3>
+        <p>We don't measure success in DAUs or session lengths — we measure it in problems solved.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5: ABOUT -->
   <section class="scene scene-about" id="about">
-    <div class="about-label">About Nextasy</div>
-    <h2 class="about-big">
-      A studio obsessed with<br>
-      <span class="underline-coral">useful, not addictive</span>
-    </h2>
-    <p class="about-body">
-      Nextasy is a small mobile studio. We build apps because we see real problems 
-      that deserve better solutions — not because we want your attention metrics.
-      Every Nextasy app ships with one goal: do its job and do it well.
-    </p>
-    <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema">Try CouplePlan →</a>
+    <div class="animate-on-scroll">
+      <div class="about-label anim-fade-up">About Nextasy</div>
+      <h2 class="about-big anim-fade-up">
+        <span class="statement-line"><span>Useful,</span></span>
+        <span class="statement-line"><span class="underline-coral">not addictive.</span></span>
+      </h2>
+      <p class="about-body anim-fade-up">
+        The best apps do their job and get out of the way. We don't measure 
+        success in DAUs or session lengths — we measure it in problems solved.
+      </p>
+      <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn-cinema anim-fade-up">Try CouplePlan →</a>
+    </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
     <span>© 2026 Nextasy</span>
+    <span class="footer-tagline">Building apps that matter</span>
     <a href="https://nextasy.co">nextasy.co</a>
   </footer>
 
   <script>
-    // ── Scroll progress bar
+    // ── 1. Scroll progress bar
     const progressFill = document.getElementById('progress');
-    window.addEventListener('scroll', () => {
-      const total = document.body.scrollHeight - window.innerHeight;
-      const pct = (window.scrollY / total * 100).toFixed(1);
-      progressFill.style.width = pct + '%';
-    });
+    const nav = document.getElementById('nav');
 
-    // ── Statement text word reveal on scroll
-    const words = document.querySelectorAll('#statement-text .reveal-word');
-    const stmtObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Light up words progressively
-          words.forEach((w, i) => {
-            setTimeout(() => w.classList.add('lit'), i * 80);
-          });
-        }
-      });
-    }, { threshold: 0.3 });
-    stmtObserver.observe(document.getElementById('statement-text'));
-
-    // ── Parallax blobs on scroll
+    // ── 2. Navbar blur on scroll
+    // ── 3. Scroll-linked background color (dark → slightly lighter → dark)
+    // ── 4. Parallax blobs
     window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+
+      // Progress bar
+      progressFill.style.width = (scrolled / total * 100).toFixed(1) + '%';
+
+      // Navbar blur
+      if (scrolled > 80) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+
+      // Dynamic background: pure black → hsl(0,0%,8%) at midpoint → black again
+      const progress = scrolled / total;
+      const lightness = Math.sin(progress * Math.PI) * 8;
+      document.documentElement.style.setProperty('--bg-dynamic', `hsl(0, 0%, ${lightness.toFixed(1)}%)`);
+
+      // Parallax blobs
       document.querySelectorAll('[data-speed]').forEach(el => {
         const speed = parseFloat(el.dataset.speed);
-        const y = window.scrollY * speed;
-        el.style.transform = `translateY(${y}px)`;
+        el.style.transform = `translateY(${scrolled * speed}px)`;
       });
-    });
 
-    // ── App section reveal on scroll
-    const revealElements = document.querySelectorAll('[data-reveal]');
-    const revealObs = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
+      // Phone parallax (subtle vertical float)
+      const phoneWrap = document.querySelector('.phone-wrap');
+      if (phoneWrap) {
+        const rect = phoneWrap.getBoundingClientRect();
+        const centerOffset = rect.top + rect.height / 2 - window.innerHeight / 2;
+        // Only apply when phone is near viewport
+        if (Math.abs(centerOffset) < window.innerHeight) {
+          phoneWrap.style.transform = `translateY(${centerOffset * -0.06}px)`;
+        }
+      }
+    }, { passive: true });
+
+    // ── 5. Intersection Observer — generic animate-on-scroll sections
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }, i * 150);
+          entry.target.classList.add('in-view');
+          // Don't unobserve — keeps state if you scroll back
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
 
-    revealElements.forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(40px)';
-      el.style.transition = 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)';
-      revealObs.observe(el);
-    });
+    document.querySelectorAll('.animate-on-scroll').forEach(el => sectionObserver.observe(el));
 
-    // ── iPhone parallax tilt on mouse
+    // ── 6. Manifesto lines — individual IntersectionObserver for stagger
+    const manifestoLines = document.querySelectorAll('.manifesto-line');
+    const manifestoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Find position in siblings for delay
+          const allLines = [...manifestoLines];
+          const idx = allLines.indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('revealed'), idx * 220);
+          manifestoObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    manifestoLines.forEach(line => manifestoObserver.observe(line));
+
+    // ── 7. iPhone tilt on mouse
     const iphone = document.getElementById('iphone-mockup');
     document.addEventListener('mousemove', (e) => {
       const rect = iphone.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const dx = (e.clientX - centerX) / window.innerWidth;
-      const dy = (e.clientY - centerY) / window.innerHeight;
-      iphone.style.transform = `perspective(1000px) rotateY(${dx * 15 - 8}deg) rotateX(${-dy * 10 + 2}deg)`;
+      // Only tilt when cursor is near the phone
+      if (Math.abs(e.clientX - (rect.left + rect.width / 2)) > window.innerWidth * 0.4) return;
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / window.innerWidth;
+      const dy = (e.clientY - (rect.top + rect.height / 2)) / window.innerHeight;
+      iphone.style.transform = `perspective(1000px) rotateY(${dx * 14 - 8}deg) rotateX(${-dy * 10 + 2}deg)`;
     });
   </script>
 
