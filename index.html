@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nextasy — Mobile Apps That Actually Matter</title>
+  <meta name="description" content="Nextasy builds mobile apps that are useful, focused, and free of bullshit. Apps that solve real problems.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --text-muted: rgba(255,255,255,0.5);
+      --accent: #7c3aed;
+      --accent-soft: rgba(124,58,237,0.15);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(10,10,10,0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent); color: #fff !important;
+      padding: 8px 20px; border-radius: 8px; font-weight: 600;
+    }
+    .nav-cta:hover { background: #6d28d9 !important; color: #fff !important; }
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--accent-soft); color: #a78bfa;
+      border: 1px solid rgba(124,58,237,0.3);
+      padding: 6px 16px; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 32px;
+    }
+    h1 {
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 24px;
+    }
+    h1 span {
+      background: linear-gradient(135deg, #a78bfa, #ec4899, #f97316);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-muted); max-width: 600px; margin: 0 auto 48px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 10px;
+      font-weight: 600; font-size: 1rem; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 0 30px rgba(124,58,237,0.3);
+    }
+    .btn-primary:hover { box-shadow: 0 0 50px rgba(124,58,237,0.5); }
+    .btn-outline {
+      border: 1px solid var(--border); color: var(--text);
+      background: rgba(255,255,255,0.03);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.06); }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    /* SECTION */
+    section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #a78bfa; margin-bottom: 16px;
+    }
+    h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px;
+    }
+    p.lead {
+      font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin-bottom: 48px;
+    }
+    /* ABOUT */
+    .about-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;
+    }
+    .about-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px;
+    }
+    .about-card .icon { font-size: 2rem; margin-bottom: 16px; }
+    .about-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .about-card p { color: var(--text-muted); font-size: 0.9rem; }
+    /* APP */
+    .app-showcase {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 64px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+    }
+    .app-content .app-tag {
+      display: inline-block; background: rgba(236,72,153,0.1); color: #f472b6;
+      border: 1px solid rgba(236,72,153,0.2); padding: 4px 12px;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;
+    }
+    .app-content h2 { margin-bottom: 16px; }
+    .app-content p { color: var(--text-muted); margin-bottom: 32px; }
+    .features-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .features-list li {
+      display: flex; gap: 12px; align-items: flex-start;
+      font-size: 0.95rem;
+    }
+    .features-list li::before {
+      content: "✓"; color: #a78bfa; font-weight: 700;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    /* iPhone mockup */
+    .phone-mockup {
+      width: 220px; height: 440px; margin: 0 auto;
+      background: #111; border-radius: 40px;
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .phone-notch {
+      width: 100px; height: 28px; background: #000;
+      border-radius: 0 0 20px 20px; margin: 0 auto;
+      flex-shrink: 0;
+    }
+    .phone-screen {
+      flex: 1; padding: 20px 16px;
+      background: linear-gradient(160deg, #1a0533 0%, #0a0a2e 100%);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .phone-app-header {
+      text-align: center; font-size: 0.75rem; font-weight: 700; color: #e879f9;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .phone-card {
+      background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .phone-card-title { font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+    .phone-card-content { font-size: 0.75rem; color: #fff; font-weight: 600; }
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center; color: var(--text-muted); font-size: 0.85rem;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .app-showcase { grid-template-columns: 1fr; padding: 32px; gap: 40px; }
+      .app-showcase .phone-wrapper { display: flex; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">Nextasy</div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#apps">Apps</a>
+      <a href="https://dlr56cmovhfn0.cloudfront.net" class="nav-cta">Try CouplePlan →</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="hero-badge">Mobile Studio</div>
+      <h1>Apps that <span>actually</span> matter</h1>
+      <p class="hero-sub">
+        Nextasy builds mobile apps that are useful, focused, and free of bullshit.
+        No dark patterns. No bloat. Just tools that solve real problems.
+      </p>
+      <div class="hero-btns">
+        <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
+        <a href="#about" class="btn btn-outline">Learn More</a>
+      </div>
+    </div>
+
+    <section id="about">
+      <div class="section-label">About Nextasy</div>
+      <h2>Built on a simple principle</h2>
+      <p class="lead">
+        Most apps are designed to capture attention. We build apps designed to solve problems — 
+        then get out of your way.
+      </p>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="icon">🎯</div>
+          <h3>Focused</h3>
+          <p>Every app does one thing exceptionally well. No feature bloat, no scope creep.</p>
+        </div>
+        <div class="about-card">
+          <div class="icon">🚫</div>
+          <h3>No Bullshit</h3>
+          <p>No dark patterns, no addictive mechanics, no manipulative design. Just clean utility.</p>
+        </div>
+        <div class="about-card">
+          <div class="icon">⚡</div>
+          <h3>Actually Useful</h3>
+          <p>We build things we'd use ourselves. If it doesn't solve a real problem, we don't ship it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="apps">
+      <div class="app-showcase">
+        <div class="app-content">
+          <div class="app-tag">First App</div>
+          <h2>CouplePlan</h2>
+          <p>
+            The shared planning app for couples — co-ordinate your life without the back-and-forth.
+            Shared to-dos, date ideas, trip planning, and more. All in one place.
+          </p>
+          <ul class="features-list">
+            <li>Shared lists and tasks that sync in real time</li>
+            <li>Plan dates, trips, and everyday errands together</li>
+            <li>Clean interface — no clutter, no subscriptions</li>
+            <li>Works offline, syncs when connected</li>
+          </ul>
+          <a href="https://dlr56cmovhfn0.cloudfront.net" class="btn btn-primary">Try CouplePlan →</a>
+        </div>
+        <div class="phone-wrapper">
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-app-header">CouplePlan</div>
+              <div class="phone-card">
+                <div class="phone-card-title">This weekend</div>
+                <div class="phone-card-content">🍝 Dinner at La Paloma</div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-title">To-do together</div>
+                <div class="phone-card-content">📦 Pick up Amazon package</div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-title">Dream trip</div>
+                <div class="phone-card-content">✈️ Lisbon in April</div>
+              </div>
+              <div class="phone-card">
+                <div class="phone-card-title">Groceries</div>
+                <div class="phone-card-content">🛒 3 items pending</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      &copy; 2026 <a href="https://nextasy.co">Nextasy</a> — Building useful apps, without bullshit.
+    </p>
+  </footer>
+
+</body>
+</html>
